@@ -34,17 +34,18 @@ beforeAll(async () => {
   await fs.emptyDir(absolutePath('./tmp'))
 })
 
-test.skip('simple protocol', compareWithJavaImplementation('simple.avdl', 'Simple'))
+test('simple protocol', compareWithJavaImplementation('simple.avdl', 'Simple'), 50000)
 
-test('protocol with two levels', compareWithJavaImplementation('two.avdl', 'Two'))
+test('protocol with two levels', compareWithJavaImplementation('two.avdl', 'Two'), 50000)
 
-test('protocol with multiple levels', compareWithJavaImplementation('multiple.avdl', 'Multiple'))
+test('protocol with multiple levels', compareWithJavaImplementation('multiple.avdl', 'Multiple'), 50000)
 
-test('protocol with union', compareWithJavaImplementation('union.avdl', 'Union'))
+test('protocol with union', compareWithJavaImplementation('union.avdl', 'Union'), 50000)
 
 test(
   'protocol with multiple union levels',
   compareWithJavaImplementation('multiple_union.avdl', 'MultipleUnion'),
+  50000,
 )
 
 test('protocol with enum', compareWithJavaImplementation('enum.avdl', 'Enum'))
