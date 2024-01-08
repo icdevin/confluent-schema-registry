@@ -1,5 +1,5 @@
 {
-  "name": "@davidgrisham/confluent-schema-registry",
+  "name": "@pluto-tv/confluent-schema-registry",
   "version": "3.3.0",
   "main": "dist/index.js",
   "description": "ConfluentSchemaRegistry is a library that makes it easier to interact with the Confluent schema registry, it provides convenient methods to encode, decode and register new schemas using the Apache Avro serialization format.",
@@ -9,10 +9,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "github.com/davidgrisham/confluent-schema-registry"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/davidgrisham"
+    "url": "git+https://github.com/Pluto-tv/confluent-schema-registry.git"
   },
   "scripts": {
     "prepare:release": "./pipeline/prepareRelease.sh",
