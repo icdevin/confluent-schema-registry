@@ -10,6 +10,7 @@ yarn-error.log
 junit.xml
 test-report.xml
 .eslintcache
+.npmrc
 
 # Others
 #
