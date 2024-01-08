@@ -1,0 +1,61 @@
+---
+name: Pre-release npm package
+on:
+  workflow_dispatch:
+    inputs:
+      versionSuffix:
+        description: 'Version suffix to append to the package version, uses ticket id in the branch if not provided'
+        required: false
+jobs:
+  # This job describes the process of building and testing the library using different versions of node js
+  Build:
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      cacheBuild: true
+    secrets: inherit
+
+  # This job describes the process of publishing to the private Pluto registry
+  Pre-release:
+    needs: [Build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v6
+        id: get-suffix
+        if: ${{ !github.event.inputs.versionSuffix }}
+        with:
+          script: |
+            const matches = context.ref.match(/^refs\/heads\/\w+\/(\w+-\d+)/);
+            if(matches === null || matches.length !== 2) {
+              throw new Error("branch name doesn't match naming convention");
+            }
+            core.setOutput('suffix', matches[1].toUpperCase())
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        id: node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          registry-url: https://npm.pkg.github.com
+          scope: '@pluto-tv'
+          cache: 'npm'
+
+      - name: Use Cached Build
+        uses: actions/cache@v2
+        id: cache-build
+        with:
+          path: ./*
+          key: ${{ github.sha }}
+
+      - name: Publish package
+        env:
+          SUFFIX: ${{ github.event.inputs.versionSuffix || steps.get-suffix.outputs.suffix }}
+          NODE_AUTH_TOKEN: ${{ secrets.GH_PKG_REPO_TOKEN }}
+          NODE_OPTIONS: --experimental-worker
+        run: |
+          echo "Updating version with suffix: ${SUFFIX}"
+          npm version prerelease --git-tag-version=false --preid=${SUFFIX}
+          echo "Publishing npm package..."
+          npm publish --tag next
+          echo "Done!"
