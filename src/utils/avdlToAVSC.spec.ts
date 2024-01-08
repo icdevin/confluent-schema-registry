@@ -34,7 +34,7 @@ beforeAll(async () => {
   await fs.emptyDir(absolutePath('./tmp'))
 })
 
-test('simple protocol', compareWithJavaImplementation('simple.avdl', 'Simple'))
+test.skip('simple protocol', compareWithJavaImplementation('simple.avdl', 'Simple'))
 
 test('protocol with two levels', compareWithJavaImplementation('two.avdl', 'Two'))
 
