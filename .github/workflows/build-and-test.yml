@@ -1,0 +1,74 @@
+---
+# This workflow describes the build and testing processes,
+# these actions will be triggered by a push event for all branches excluding tags and all PRs to the master branch
+name: Build, Lint and Test
+
+on:
+  push:
+    branches:
+      - master
+    tags-ignore:
+      - '**'
+  pull_request:
+    branches:
+      - master
+  workflow_call:
+    inputs:
+      cacheBuild:
+        type: boolean
+        default: false
+    secrets:
+      NPM_TOKEN:
+        required: true
+
+jobs:
+  # This job describes the process of building and testing the library using different versions of node js
+  Build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14, 16, 18]
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: https://npm.pkg.github.com
+          scope: '@pluto-tv'
+          cache: 'npm'
+
+      - name: Install Node.js dependencies
+        run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Build JavaScript files from TypeScript notation
+        run: npm run build --if-present
+
+      - name: Execute unit test
+        env:
+          JEST_JUNIT_OUTPUT_DIR: ./reports/junit/
+          JEST_JUNIT_OUTPUT_NAME: junit-${{ matrix.node-version }}.xml
+          NODE_OPTIONS: --experimental-worker
+        run: npm run test -- --reporters=default --reporters=jest-junit
+
+      - name: Store test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: ./reports/junit/
+
+      - name: Read .nvmrc
+        run: echo "version=$(cat .nvmrc)" >> $GITHUB_OUTPUT
+        id: nvm
+
+      - name: Cache build if needed
+        if: inputs.cacheBuild && matrix.node-version == steps.nvm.outputs.version
+        uses: actions/cache@v2
+        id: cache-build
+        with:
+          path: ./*
+          key: ${{ github.sha }}
