@@ -16,9 +16,6 @@ jobs:
     # needs: release
     name: Publish NPM Package
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     steps:
       - uses: actions/setup-node@v3
         with:
@@ -31,7 +28,7 @@ jobs:
       #     key: ${{ secrets.PLUTO_DEPLOY_SSH_KEY }}
       - name: Publish NPM Package
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GH_PKG_REPO_TOKEN }}
         run: |
           env
           npm install --silent
