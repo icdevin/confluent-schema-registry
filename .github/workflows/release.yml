@@ -59,9 +59,9 @@ jobs:
           registry-url: 'https://npm.pkg.github.com'
           scope: '@pluto-tv'
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/setup-ssh
-        with:
-          key: ${{ secrets.PLUTO_DEPLOY_SSH_KEY }}
+      # - uses: ./.github/actions/setup-ssh
+      #   with:
+      #     key: ${{ secrets.PLUTO_DEPLOY_SSH_KEY }}
       - name: Publish NPM Package
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GH_PKG_REPO_TOKEN }}
