@@ -68,7 +68,7 @@ jobs:
         run: |
           env
           npm install --silent
-          npm run publish-client
+          npm publish
       - name: Check Publish Status
         if: ${{ failure() }}
         run: |
