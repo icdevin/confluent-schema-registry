@@ -67,6 +67,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GH_PKG_REPO_TOKEN }}
         run: |
           env
+          npm install --silent
           npm run publish-client
       - name: Check Publish Status
         if: ${{ failure() }}
