@@ -8,48 +8,50 @@ on:
       - 'fix/ARCH-4426'
 
 jobs:
-  # release:
-  #   if: |
-  #     github.event.pull_request.merged == true &&
-  #     github.base_ref == 'master' &&
-  #     !contains(github.event.pull_request.labels.*.name, 'no-auto-release')
-  #   runs-on: ubuntu-20.04
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
 
-  #     - name: Checkout actions repository
-  #       uses: actions/checkout@v3
-  #       with:
-  #         repository: pluto-tv/gha
-  #         ref: v1
-  #         token: ${{ secrets.GH_PKG_REPO_TOKEN }}
-  #         path: ./.github/gha
+  release:
+    # if: |
+    #   github.event.pull_request.merged == true &&
+    #   github.base_ref == 'master' &&
+    #   !contains(github.event.pull_request.labels.*.name, 'no-auto-release')
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-  #     - name: Service environment
-  #       id: go-lib-env
-  #       uses: ./.github/gha/go-lib-env
+      - name: Checkout actions repository
+        uses: actions/checkout@v3
+        with:
+          repository: pluto-tv/gha
+          ref: v1
+          token: ${{ secrets.GH_PKG_REPO_TOKEN }}
+          path: ./.github/gha
 
-  #     - name: Create release
-  #       id: github-release
-  #       uses: ./.github/gha/gh-release
-  #       with:
-  #         service-name: "${{ steps.go-lib-env.outputs.name }}"
-  #         service-version: "${{ steps.go-lib-env.outputs.version }}"
+      - name: Service environment
+        id: go-lib-env
+        uses: ./.github/gha/go-lib-env
 
-  #     - name: Print release notes and url
-  #       run: |
-  #         echo -e "$RELEASE_NOTES"
-  #         echo "Release is available at: $RELEASE_URL"
-  #       env:
-  #         RELEASE_URL: "${{ steps.github-release.outputs.release-url }}"
-  #         RELEASE_NOTES: "${{ steps.github-release.outputs.release-notes }}"
+      - name: Create release
+        id: github-release
+        uses: ./.github/gha/gh-release
+        with:
+          service-name: "${{ steps.go-lib-env.outputs.name }}"
+          service-version: "${{ steps.go-lib-env.outputs.version }}"
+
+      - name: Print release notes and url
+        run: |
+          echo -e "$RELEASE_NOTES"
+          echo "Release is available at: $RELEASE_URL"
+        env:
+          RELEASE_URL: "${{ steps.github-release.outputs.release-url }}"
+          RELEASE_NOTES: "${{ steps.github-release.outputs.release-notes }}"
+
   publish:
     # if: |
     #   github.event.pull_request.merged == true &&
     #   github.base_ref == 'master' &&
     #   !contains(github.event.pull_request.labels.*.name, 'no-auto-release')
-    # needs: release
+    needs: release
     name: Publish NPM Package
     runs-on: ubuntu-latest
     steps:
