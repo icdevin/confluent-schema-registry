@@ -10,13 +10,13 @@ const errors_1 = require("./errors");
 const MAX_VARINT_LEN_64 = 10;
 class ProtoSchema {
     constructor(schema, opts) {
-        const parsedMessage = protobufjs_1.default.parse(schema.schema);
+        const parsedMessage = protobufjs_1.default.parse(schema.schema, { keepCase: true });
         const root = parsedMessage.root;
         this.namespace = this.getNestedNamespace(parsedMessage.root, parsedMessage.package || '');
         const referencedSchemas = opts === null || opts === void 0 ? void 0 : opts.referencedSchemas;
         // handle all schema references independent on nested references
         if (referencedSchemas) {
-            referencedSchemas.forEach(rawSchema => protobufjs_1.default.parse(rawSchema.schema, root));
+            referencedSchemas.forEach(rawSchema => protobufjs_1.default.parse(rawSchema.schema, root, { keepCase: true }));
         }
     }
     // getNestedNamespace traverses from the root down into the innermost namespace specified by the package name.

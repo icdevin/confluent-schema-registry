@@ -10,14 +10,14 @@ export default class ProtoSchema implements Schema {
   private namespace: Namespace
 
   constructor(schema: ProtoConfluentSchema, opts?: ProtoOptions) {
-    const parsedMessage = protobuf.parse(schema.schema)
+    const parsedMessage = protobuf.parse(schema.schema, { keepCase: true })
     const root = parsedMessage.root
     this.namespace = this.getNestedNamespace(parsedMessage.root, parsedMessage.package || '')
 
     const referencedSchemas = opts?.referencedSchemas
     // handle all schema references independent on nested references
     if (referencedSchemas) {
-      referencedSchemas.forEach(rawSchema => protobuf.parse(rawSchema.schema as string, root))
+      referencedSchemas.forEach(rawSchema => protobuf.parse(rawSchema.schema as string, root, { keepCase: true }))
     }
   }
 
