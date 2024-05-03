@@ -138,7 +138,7 @@ export default class SchemaRegistry {
           `Compatibility does not match the configuration (${compatibility} != ${compatibilityLevel.toUpperCase()})`,
         )
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error.status !== 404) {
         throw error
       } else {
@@ -369,7 +369,7 @@ export default class SchemaRegistry {
       const { id }: { id: number } = response.data()
 
       return id
-    } catch (error) {
+    } catch (error: any) {
       if (error.status && error.status === 404) {
         throw new ConfluentSchemaRegistryError(error)
       }
@@ -387,7 +387,7 @@ export default class SchemaRegistry {
 
   private getSchemaOriginRequest(registryId: number) {
     // ensure that cache-misses result in a single origin request
-    if (this.cacheMissRequests[registryId]) {
+    if (this.cacheMissRequests[registryId] !== undefined) {
       return this.cacheMissRequests[registryId]
     } else {
       const request = this.api.Schema.find({ id: registryId }).finally(() => {
